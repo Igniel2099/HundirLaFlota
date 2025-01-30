@@ -10,12 +10,22 @@ public class Cliente implements Runnable {
 
     private String name;
 
+    private boolean isMessageServer = false;
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean getIsMessageServer() {
+        return isMessageServer;
+    }
+
+    public void setIsMessageServer(boolean messageServer) {
+        isMessageServer = messageServer;
     }
 
     public static void main(String[] args) {
@@ -25,11 +35,16 @@ public class Cliente implements Runnable {
     }
 
     @Override
-    public void run() {
-        connectionToServer("localhost", 5000);
+    public synchronized void run() {
+        String serverMessage =connectionToServer("localhost", 5000);
+        if (serverMessage != null) {
+            System.out.println(serverMessage);
+            setIsMessageServer(true);
+            notify();
+        }
     }
 
-    public void connectionToServer(String host, int puerto) {
+    public String connectionToServer(String host, int puerto) {
         DataInputStream in = null;
         DataOutputStream out = null;
         Scanner sc = new Scanner(System.in);
@@ -42,11 +57,13 @@ public class Cliente implements Runnable {
             out.writeUTF("Hola Soy " + getName());
 
             in = new DataInputStream(socket.getInputStream());
-            System.out.println(in.readUTF());
+
+            return in.readUTF();
             //socket.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
 }

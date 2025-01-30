@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.example.hundirlaflota.ServidorCliente.Cliente;
+import org.example.hundirlaflota.Window.MainWindow;
 
 public class UploadController {
     private Stage primaryStage;
@@ -73,11 +74,36 @@ public class UploadController {
         // Iniciar la animación
         timeline.play();
 
-        if (cliente != null) {
-            Thread thread = new Thread(getCliente());
-            thread.start();
-        }
+        if (getCliente() != null) {
+            Thread thread = new Thread(() -> {
+                getCliente().run(); // Ejecuta el cliente en un hilo separado
 
+                synchronized (getCliente()) {
+                    while (!getCliente().getIsMessageServer()) {
+                        try {
+                            getCliente().wait(); // Espera a que el servidor responda
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                Platform.runLater(() -> {
+                    // Asegúrate de que la UI esté actualizada solo cuando se haya recibido la respuesta.
+                    MainWindow mainWindow = new MainWindow();
+                    try {
+                        mainWindow.start(getPrimaryStage());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            });
+
+
+            thread.start();
+
+
+        }
 
     }
 
