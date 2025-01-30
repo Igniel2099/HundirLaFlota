@@ -20,7 +20,7 @@
 
 .pane-style:hover{
     -fx-cursor: hand;
-    -fx-background-color: red;
+    -fx-background-color: gray;
 }
 .pane-style:pressed{
     -fx-scale-x: 0.95;

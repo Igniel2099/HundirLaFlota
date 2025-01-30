@@ -10,9 +10,12 @@ import org.example.hundirlaflota.Controllers.MainController;
 import org.example.hundirlaflota.Controllers.StartController;
 
 import java.io.IOException;
+import java.util.List;
+
+import static javafx.application.Application.launch;
 
 
-public class StartWindow  extends Application {
+public class StartWindow {
 
 
     /**
@@ -21,8 +24,11 @@ public class StartWindow  extends Application {
      * @param loader el loader de la escena
      * @param primaryStage el stage que tengo que pasarle al controlador
      */
-    public void getController(FXMLLoader loader, Stage primaryStage) {
+    public void getController(FXMLLoader loader, Stage primaryStage, List<List<Integer[]>>  listAllCoords) {
         StartController controller = loader.getController();
+        controller.setArraysShips(listAllCoords);
+        controller.gridPaneShipFilling();
+
         controller.setPrimaryStage(primaryStage);
     }
 
@@ -33,13 +39,13 @@ public class StartWindow  extends Application {
      * @return me devuelve la escena
      * @throws IOException controlar las posibles excepciones del programa
      */
-    public Scene fxmlLoader(String pathScene,Stage primaryStage) throws IOException {
+    public Scene fxmlLoader(String pathScene,Stage primaryStage, List<List<Integer[]>>  listAllCoords) throws IOException {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(pathScene));
         Parent root = loader.load();
+        getController(loader, primaryStage, listAllCoords);
 
         // Obtener el controlador y pasar el Stage principal
-        getController(loader, primaryStage);
 
         return new Scene(root);
     }
@@ -49,9 +55,9 @@ public class StartWindow  extends Application {
      * @param stage Este es el escenario principal donde se va ha ejecutar
      * @throws IOException controla las posibles excepciones
      */
-    @Override
-    public void start(Stage stage) throws IOException {
-        Scene scene = fxmlLoader("/org/example/hundirlaflota/Scenes/startWindow.fxml",stage);
+
+    public void start(Stage stage, List<List<Integer[]>> listAllCoords) throws IOException {
+        Scene scene = fxmlLoader("/org/example/hundirlaflota/Scenes/startWindow.fxml",stage,listAllCoords);
 
         stage.setScene(scene);
         stage.show(); // mostrar el escenario

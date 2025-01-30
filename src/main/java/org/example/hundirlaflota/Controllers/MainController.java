@@ -8,7 +8,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.example.hundirlaflota.ConvertMatrix;
+import org.example.hundirlaflota.Window.StartWindow;
 
+import java.io.IOException;
 import java.util.*;
 
 public class MainController {
@@ -18,6 +21,8 @@ public class MainController {
     private Stage primaryStage;
 
     private List<Integer[]> listCoordinates = new ArrayList<>();
+
+    private List<List<Integer[]>> listAllCoordinates = new ArrayList<>();
 
     @FXML
     private Label quantityShipFour;
@@ -68,6 +73,14 @@ public class MainController {
 
     public void setListCoordinates(List<Integer[]> listCoordinates) {
         this.listCoordinates = listCoordinates;
+    }
+
+    public List<List<Integer[]>> getListAllCoordinates() {
+        return listAllCoordinates;
+    }
+
+    public void setListAllCoordinates(List<List<Integer[]>> listAllCoordinates) {
+        this.listAllCoordinates = listAllCoordinates;
     }
 
     public Label getQuantityShipFour() {
@@ -149,7 +162,25 @@ public class MainController {
             getQuantityShipTwo().getText().equals("0")) {
 
             System.out.println("Ha terminado");
+            StartWindow startWindow = new StartWindow();
+            System.out.println("Lista de todas las coordenadas de los barcos:");
+            for (List<Integer[]> list : listAllCoordinates) {
+                System.out.println("listas");
+                for (Integer[] integers : list) {
+                    System.out.println(Arrays.toString(integers));
+                }
+            }
+            try {
+
+                startWindow.start(getPrimaryStage(), getListAllCoordinates());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
     }
 
     @FXML
@@ -228,6 +259,9 @@ public class MainController {
         for (Integer[] coord : list) {
             System.out.println(coord[0] + " " + coord[1]);
         }
+        if (list.size() == getShipSpace()){
+            getListAllCoordinates().add(list);
+        }
         return list.size() == getShipSpace();
     }
 
@@ -249,42 +283,10 @@ public class MainController {
         }
 
         if (coords.isEmpty()) return false;
-        //if () return false;
 
+        ConvertMatrix matrix = new ConvertMatrix();
+        matrix.mergeCells(gridPane, coords);
 
-        for (Integer[] coord : coords) {
-            System.out.println(Arrays.toString(coord));
-        }
-        // Obtener la primera y última coordenada
-        Integer[] first = coords.getFirst();
-        Integer[] last = coords.getLast();
-
-        int startCol = first[1]; // Columna inicial
-        int startRow = first[0]; // Fila inicial
-        int endCol = last[1]; // Última columna
-        int endRow = last[0]; // Última fila
-
-        // Crear un Pane unificado
-        Pane mergedPane = new Pane();
-        mergedPane.setStyle("-fx-background-color: lightblue; -fx-border-color: black;");
-        mergedPane.setPrefSize((endCol - startCol + 1) * 37.6, (endRow - startRow + 1) * 36.8);
-
-        // Remover las celdas individuales
-        coords.forEach(coord -> {
-            gridPane.getChildren().removeIf(node ->
-                    GridPane.getRowIndex(node) == coord[0] && GridPane.getColumnIndex(node) == coord[1]
-            );
-        });
-
-        // Agregar el Pane grande en la posición inicial
-        gridPane.add(mergedPane, startCol, startRow);
-
-        // Aplicar rowSpan o colSpan
-        if (startRow == endRow) {
-            GridPane.setColumnSpan(mergedPane, endCol - startCol + 1);
-        } else if (startCol == endCol) {
-            GridPane.setRowSpan(mergedPane, endRow - startRow + 1);
-        }
         return true;
     }
 
@@ -321,22 +323,27 @@ public class MainController {
         }
     }
 
+    private void setEventToPane(){
+        for (Node node : getMyGrid().getChildren()) {
+            Integer rowIndex = GridPane.getRowIndex(node);
+            Integer colIndex = GridPane.getColumnIndex(node);
+
+            // Si no se ha especificado el índice, por defecto será 0.
+            rowIndex = (rowIndex == null) ? 0 : rowIndex;
+            colIndex = (colIndex == null) ? 0 : colIndex;
+
+            final Integer row = rowIndex;
+            final Integer col = colIndex;
+            node.setOnMouseClicked(event -> handleCellClick(event, row, col));
+        }
+    }
+
     @FXML
     public void initialize(){
-        for (int row = 0; row < 9; row++) {
-            for (int col = 0; col < 9; col++) {
-                Pane pane = new Pane();
-                pane.setPrefSize(37.6, 36.8); // Tamaño de cada celda
+        ConvertMatrix convertMatrix = new ConvertMatrix();
+        convertMatrix.buildGridPaneWithPaneWater(getMyGrid());
+        setEventToPane();
 
-                // Agregar evento de clic
-                final int finalRow = row;
-                final int finalCol = col;
-                pane.setOnMouseClicked(event -> handleCellClick(event, finalRow, finalCol));
-
-                // Agregar Pane al GridPane
-                getMyGrid().add(pane, col, row);
-            }
-        }
     }
 
 

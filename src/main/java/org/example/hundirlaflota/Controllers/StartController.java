@@ -1,28 +1,38 @@
 package org.example.hundirlaflota.Controllers;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import org.example.hundirlaflota.ConvertMatrix;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class StartController {
-    private List<List<Integer>> arrayShip;
+
+    private List<List<Integer[]>> arraysShips;
 
     private Stage primaryStage;
+
+    private List<Integer> positionGang;
 
     @FXML
     private GridPane yourGrid;
 
-    public List<List<Integer>> getArrayShip() {
-        return arrayShip;
+    @FXML
+    private GridPane myGrid;
+
+    public List<List<Integer[]>> getArraysShips() {
+        return arraysShips;
     }
 
-    public void setArrayShip(List<List<Integer>> arrayShip) {
-        this.arrayShip = arrayShip;
+    public void setArraysShips(List<List<Integer[]>> arraysShips) {
+        this.arraysShips = arraysShips;
     }
 
     public Stage getPrimaryStage() {
@@ -33,6 +43,14 @@ public class StartController {
         this.primaryStage = primaryStage;
     }
 
+    public List<Integer> getPositionGang() {
+        return positionGang;
+    }
+
+    public void setPositionGang(List<Integer> positionGang) {
+        this.positionGang = positionGang;
+    }
+
     public GridPane getYourGrid() {
         return yourGrid;
     }
@@ -41,16 +59,47 @@ public class StartController {
         this.yourGrid = yourGrid;
     }
 
-    @FXML
-    private void pressedGang(MouseEvent event) {
-        System.out.println("Gang");
+    public GridPane getMyGrid() {
+        return myGrid;
     }
-    private void handleCellClick(MouseEvent event, int row, int col) {
-        System.out.println("Clic en celda: (" + row + ", " + col + ")");
+
+    public void setMyGrid(GridPane myGrid) {
+        this.myGrid = myGrid;
     }
 
     @FXML
-    private void initialize() {
+    private void pressedGang(MouseEvent event) {
+        System.out.println("Gang in " + getPositionGang());
+    }
+
+    public Pane getPaneFromGrid(GridPane grid, List<Integer> position) {
+        int row = position.get(0); // Fila de getPosition
+        int col = position.get(1); // Columna de getPosition
+
+        for (Node node : grid.getChildren()) {
+            if (GridPane.getRowIndex(node) != null && GridPane.getColumnIndex(node) != null) {
+                if (GridPane.getRowIndex(node) == row && GridPane.getColumnIndex(node) == col) {
+                    return (Pane) node; // Retorna el Pane en esa posición
+                }
+            }
+        }
+        return null; // Si no encuentra el Pane
+    }
+
+    private void handleCellClick(MouseEvent event, int row, int col) {
+        System.out.println("Clic en celda: (" + row + ", " + col + ")");
+
+        if (getPositionGang() != null){
+            Pane pane = getPaneFromGrid(getYourGrid(),getPositionGang());
+            pane.setStyle("");
+        }
+
+        setPositionGang(new ArrayList<>(Arrays.asList(row, col)));
+        Pane pane = (Pane) event.getSource();
+        pane.setStyle("-fx-background-color: red");
+    }
+
+    public void paneFillingYourGridPane(){
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
                 Pane pane = new Pane();
@@ -65,5 +114,17 @@ public class StartController {
                 getYourGrid().add(pane, col, row);
             }
         }
+    }
+
+    public void gridPaneShipFilling(){
+        ConvertMatrix convertMatrix = new ConvertMatrix();
+        GridPane newGridPane = convertMatrix.reBuildGridPane(getArraysShips(),getMyGrid());
+        setMyGrid(newGridPane);
+    }
+
+    @FXML
+    private void initialize() {
+        paneFillingYourGridPane();
+
     }
 }
