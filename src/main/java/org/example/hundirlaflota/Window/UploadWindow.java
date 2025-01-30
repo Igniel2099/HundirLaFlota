@@ -24,11 +24,10 @@ public class UploadWindow {
 
         controller.setUserName(name);
         controller.getCliente().setName(name);
-        controller.getCliente().connectionToServer("192.168.1.29",5000);
-
 
         System.out.println(controller.getUserName());
         controller.setPrimaryStage(primaryStage);
+
     }
 
     /**

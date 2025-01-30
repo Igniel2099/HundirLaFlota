@@ -2,6 +2,7 @@ package org.example.hundirlaflota.Controllers;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.image.Image;
@@ -72,5 +73,14 @@ public class UploadController {
         // Iniciar la animación
         timeline.play();
 
+        if (cliente != null) {
+            Thread thread = new Thread(getCliente());
+            thread.start();
+        }
+
+
     }
+
+
+
 }
