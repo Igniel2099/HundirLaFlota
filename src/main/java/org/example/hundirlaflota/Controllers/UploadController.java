@@ -8,11 +8,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.example.hundirlaflota.ServidorCliente.Cliente;
 
 public class UploadController {
     private Stage primaryStage;
 
     private String userName;
+
+    private Cliente cliente =  new Cliente();
 
     @FXML
     private ImageView imageViewRotate;
@@ -31,6 +34,14 @@ public class UploadController {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
     public ImageView getImageViewRotate() {

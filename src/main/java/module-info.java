@@ -7,6 +7,7 @@ module org.example.hundirlaflota {
     opens org.example.hundirlaflota to javafx.fxml;
     exports org.example.hundirlaflota;
     exports org.example.hundirlaflota.Controllers;
+    exports org.example.hundirlaflota.ServidorCliente;
     opens org.example.hundirlaflota.Controllers to javafx.fxml;
     exports org.example.hundirlaflota.Window;
     opens org.example.hundirlaflota.Window to javafx.fxml;
