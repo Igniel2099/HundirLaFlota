@@ -1,5 +1,6 @@
 package org.example.hundirlaflota.Controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -9,12 +10,16 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.example.hundirlaflota.ConvertMatrix;
+import org.example.hundirlaflota.ServidorCliente.Cliente;
+import org.example.hundirlaflota.Window.MainWindow;
 import org.example.hundirlaflota.Window.StartWindow;
 
 import java.io.IOException;
 import java.util.*;
 
 public class MainController {
+
+    private Cliente cliente = new Cliente();
 
     private Integer shipSpace;
 
@@ -50,6 +55,15 @@ public class MainController {
 
     @FXML
     private GridPane myGrid;
+
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
 
     public Integer getShipSpace() {
         return shipSpace;
@@ -164,21 +178,40 @@ public class MainController {
             System.out.println("Ha terminado");
             StartWindow startWindow = new StartWindow();
             System.out.println("Lista de todas las coordenadas de los barcos:");
-            for (List<Integer[]> list : listAllCoordinates) {
+            for (List<Integer[]> list : getListAllCoordinates()) {
                 System.out.println("listas");
                 for (Integer[] integers : list) {
                     System.out.println(Arrays.toString(integers));
                 }
             }
-            try {
 
-                startWindow.start(getPrimaryStage(), getListAllCoordinates());
+            Thread thread = new Thread(() -> {
+                getCliente().run(); // Ejecuta el cliente en un hilo separado
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                synchronized (getCliente()) {
+                    while (!getCliente().getIsMessageServer()) {
+                        try {
+                            getCliente().wait(); // Espera a que el servidor responda
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                Platform.runLater(() -> {
+                    // Asegúrate de que la UI esté actualizada solo cuando se haya recibido la respuesta.
+                    try {
+                        startWindow.start(getPrimaryStage(), getListAllCoordinates());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+
+            });
+
+
         }
 
     }

@@ -36,7 +36,7 @@ public class Cliente implements Runnable {
 
     @Override
     public synchronized void run() {
-        String serverMessage =connectionToServer(" 192.168.1.29", 5000);
+        String serverMessage =connectionToServer("192.168.1.29", 5000);
         if (serverMessage != null) {
             System.out.println(serverMessage);
             setIsMessageServer(true);
