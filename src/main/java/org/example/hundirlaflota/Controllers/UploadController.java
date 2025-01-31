@@ -92,13 +92,12 @@ public class UploadController {
                     // Asegúrate de que la UI esté actualizada solo cuando se haya recibido la respuesta.
                     MainWindow mainWindow = new MainWindow();
                     try {
-                        mainWindow.start(getPrimaryStage());
+                        mainWindow.start(getPrimaryStage(), getUserName());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
             });
-
 
             thread.start();
 

@@ -12,6 +12,7 @@ public class Cliente implements Runnable {
 
     private boolean isMessageServer = false;
 
+
     public String getName() {
         return name;
     }
@@ -28,12 +29,6 @@ public class Cliente implements Runnable {
         isMessageServer = messageServer;
     }
 
-    public static void main(String[] args) {
-        final String HOST = "localhost";
-        final int PUERTO = 5000;
-
-    }
-
     @Override
     public synchronized void run() {
         String serverMessage =connectionToServer("192.168.1.29", 5000);
@@ -47,14 +42,15 @@ public class Cliente implements Runnable {
     public String connectionToServer(String host, int puerto) {
         DataInputStream in = null;
         DataOutputStream out = null;
-        Scanner sc = new Scanner(System.in);
 
         try{
 
             Socket socket = new Socket(host, puerto);
             System.out.println("Conectado al servidor");
+
             out = new DataOutputStream(socket.getOutputStream());
-            out.writeUTF("Hola Soy " + getName());
+
+            out.writeUTF(sendMessage());
 
             in = new DataInputStream(socket.getInputStream());
 
@@ -65,5 +61,9 @@ public class Cliente implements Runnable {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String sendMessage() {
+        return "Hola Soy " + getName();
     }
 }

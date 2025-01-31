@@ -9,7 +9,9 @@ import org.example.hundirlaflota.Controllers.MainController;
 
 import java.io.IOException;
 
-public class MainWindow extends Application {
+import static javafx.application.Application.launch;
+
+public class MainWindow {
 
     /**
      * Este método te permite obtener el controlador de la ventana y mandarle a este mismo controlador
@@ -17,9 +19,10 @@ public class MainWindow extends Application {
      * @param loader el loader de la escena
      * @param primaryStage el stage que tengo que pasarle al controlador
      */
-    public void getController(FXMLLoader loader, Stage primaryStage) {
+    public void getController(FXMLLoader loader, Stage primaryStage, String name) {
         MainController controller = loader.getController();
         controller.setPrimaryStage(primaryStage);
+        controller.getCliente().setName(name);
     }
 
     /**
@@ -29,13 +32,13 @@ public class MainWindow extends Application {
      * @return me devuelve la escena
      * @throws IOException controlar las posibles excepciones del programa
      */
-    public Scene fxmlLoader(String pathScene,Stage primaryStage) throws IOException {
+    public Scene fxmlLoader(String pathScene,Stage primaryStage, String name) throws IOException {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource(pathScene));
         Parent root = loader.load();
 
         // Obtener el controlador y pasar el Stage principal
-        getController(loader, primaryStage);
+        getController(loader, primaryStage, name);
 
         return new Scene(root);
     }
@@ -45,9 +48,8 @@ public class MainWindow extends Application {
      * @param stage Este es el escenario principal donde se va ha ejecutar
      * @throws IOException controla las posibles excepciones
      */
-    @Override
-    public void start(Stage stage) throws IOException {
-        Scene scene = fxmlLoader("/org/example/hundirlaflota/Scenes/mainWindow.fxml",stage);
+    public void start(Stage stage, String name) throws IOException {
+        Scene scene = fxmlLoader("/org/example/hundirlaflota/Scenes/mainWindow.fxml",stage, name);
 
         stage.setScene(scene);
         stage.show(); // mostrar el escenario

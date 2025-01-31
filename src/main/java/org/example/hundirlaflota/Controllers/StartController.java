@@ -2,18 +2,23 @@ package org.example.hundirlaflota.Controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.example.hundirlaflota.ConvertMatrix;
+import org.example.hundirlaflota.ServidorCliente.Cliente;
+import org.example.hundirlaflota.ServidorCliente.ClienteGame;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class StartController {
+
+    private ClienteGame clienteGame = new ClienteGame();
 
     private List<List<Integer[]>> arraysShips;
 
@@ -26,6 +31,14 @@ public class StartController {
 
     @FXML
     private GridPane myGrid;
+
+    public ClienteGame getClienteGame() {
+        return clienteGame;
+    }
+
+    public void setClienteGame(ClienteGame clienteGame) {
+        this.clienteGame = clienteGame;
+    }
 
     public List<List<Integer[]>> getArraysShips() {
         return arraysShips;
@@ -70,6 +83,23 @@ public class StartController {
     @FXML
     private void pressedGang(MouseEvent event) {
         System.out.println("Gang in " + getPositionGang());
+        ImageView imageView = (ImageView) event.getSource();
+        imageView.setImage(new Image(getClass().getResource("/org/example/hundirlaflota/Images/button.png").toExternalForm()));
+        ((Node) event.getSource()).setDisable(true);
+
+        synchronized (getClienteGame()){
+            getClienteGame().run();
+            while (!getClienteGame().getIsMessageServer()){
+                try{
+                    getClienteGame().wait();
+                }catch(InterruptedException e){
+                    e.printStackTrace();
+                }
+            }
+            imageView.setImage(new Image(getClass().getResource("/org/example/hundirlaflota/Images/buttonBang.png").toExternalForm()));
+            ((Node) event.getSource()).setDisable(false);
+        }
+
     }
 
     public Pane getPaneFromGrid(GridPane grid, List<Integer> position) {

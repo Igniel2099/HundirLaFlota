@@ -211,6 +211,9 @@ public class MainController {
 
             });
 
+            thread.start();
+
+
 
         }
 
